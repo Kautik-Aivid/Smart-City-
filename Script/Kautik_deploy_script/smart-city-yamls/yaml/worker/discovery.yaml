@@ -1,0 +1,62 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stadium-office1-ipcamera-discovery
+  labels:
+     app: stadium-office1-ipcamera-discovery
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stadium-office1-ipcamera-discovery
+  template:
+    metadata:
+      labels:
+        app: stadium-office1-ipcamera-discovery
+    spec:
+      enableServiceLinks: false
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+        - name: stadium-office1-ipcamera-discovery
+          image: aividtechvision/smtc_onvif_discovery:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: OFFICE
+              value: "37.39856,-121.94866"
+            - name: DBHOST
+              value: "http://db-service:9200"
+            - name: SERVICE_INTERVAL
+              value: "30"
+            - name: NO_PROXY
+              value: "*"
+            - name: no_proxy
+              value: "*"
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: timezone
+              readOnly: true
+      volumes:
+          - name: timezone
+            hostPath:
+                path: /etc/localtime
+                type: File
+      affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                  - key: workload
+                    operator: In
+                    values:
+                      - master
+
+
+
+---
+
+
+
+---                                                         
+

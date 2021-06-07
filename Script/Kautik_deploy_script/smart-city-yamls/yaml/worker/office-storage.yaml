@@ -1,0 +1,88 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: stadium-office1-storage-service
+  labels:
+    app: stadium-office1-storage
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+  selector:
+    app: stadium-office1-storage
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stadium-office1-storage
+  labels:
+     app: stadium-office1-storage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stadium-office1-storage
+  template:
+    metadata:
+      labels:
+        app: stadium-office1-storage
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: stadium-office1-storage
+          image: aividtechvision/smtc_storage_manager:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: OFFICE
+              value: "37.39856,-121.94866"
+            - name: DBHOST
+              value: "http://db-service:9200"
+            - name: INDEXES
+              value: "recordings,analytics"
+            - name: RETENTION_TIME
+              value: "3600"
+            - name: SERVICE_INTERVAL
+              value: "1800"
+            - name: WARN_DISK
+              value: "70"
+            - name: FATAL_DISK
+              value: "75"
+            - name: HALT_REC
+              value: "80"
+            - name: THUMBNAIL_CACHE
+              value: "50"
+            - name: NO_PROXY
+              value: "*"
+            - name: no_proxy
+              value: "*"
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: timezone
+              readOnly: true
+            - mountPath: /var/www/mp4/
+              name: storagepod
+      volumes:
+        - name: timezone
+          hostPath:
+            path: /etc/localtime
+            type: File
+        - name: storagepod
+          persistentVolumeClaim:
+            claimName: storagepod
+      affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                  - key: workload
+                    operator: In
+                    values:
+                      - master
+
+
+---
+

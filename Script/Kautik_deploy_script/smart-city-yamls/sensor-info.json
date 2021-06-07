@@ -1,0 +1,103 @@
+[{
+    "scenario": "stadium",
+    "address": "National Stadium",
+    "location": {
+        "lat": 37.39856,
+        "lon": -121.94866
+    },
+    "sensors": [{
+        "address": "East Gate",
+        "location": {
+            "lat": 37.38813,
+            "lon": -121.94370 
+        },
+        "algorithm": "entrance-counting",
+        "theta": 90.0,
+        "passcode": "admin:Aivid2020",
+        "ip": "192.168.1.11",
+        "port": [ 80, 9988, 554, 85],
+        "rtspurl": "rtsp://admin:Aivid2020@192.168.1.11:85/videoMainsc"
+    },{
+        "address": "South West Exit",
+        "location": {
+            "lat": 37.39124,
+            "lon": -121.97741
+        },
+        "algorithm": "cleanning",
+        "theta": 90.0,
+        "passcode": "admin:Aivid2020",
+        "ip": "192.168.1.12",
+        "port": [ 80, 9988, 554, 85],
+        "rtspurl": "rtsp://admin:Aivid2020@192.168.1.12:85/videoMainsc"
+    },{
+        "address": "South West Exit",
+        "location": {
+            "lat": 37.38077,
+            "lon": -121.97388
+        },
+        "algorithm": "queue",
+        "theta": 90.0,
+        "passcode": "admin:Aivid2020",
+        "ip": "192.168.1.31",
+        "port": [ 80, 9988, 554, 85],
+        "rtspurl": "rtsp://admin:Aivid2020@192.168.1.31:85/videoMainsc"
+    },{
+        "address": "South West Entry",
+        "location": {
+            "lat": 37.37800,
+            "lon": -121.95116
+
+
+        },
+        "algorithm": "vehical",
+        "theta": 90.0,
+        "passcode": "admin:Aivid2020",
+        "ip": "192.168.1.32",
+        "port": [ 80, 9988, 554, 85],
+        "rtspurl": "rtsp://admin:Aivid2020@192.168.1.32:85/videoMainsc"
+    },{
+        "address": "Jackson School & Harewood",
+        "location": {
+            "lat": 37.39528,
+            "lon": -121.94820
+        },
+        "algorithm": "emotion",
+        "theta": 315.0,
+        "zones": [1],
+        "zonemap": [{
+            "zone": 1,
+            "polygon": [[430,100],[1279,130],[1279,719],[0,719],[430,100]]
+        }],   
+        "passcode": "admin:Aivid2020",
+        "ip": "192.168.1.33",
+        "port": [ 80, 9988, 554, 85],
+        "rtspurl": "rtsp://admin:Aivid2020@192.168.1.33:85/videoMainsc"
+    },{
+        "address": "East Wing",
+        "location": {
+            "lat": 37.38865,
+            "lon": -121.95405
+        },
+        "algorithm": "crowd-counting",
+        "theta": 270.0,
+        "zones": [0],
+        "zonemap": [{
+            "zone": 0,
+            "polygon": [[430,100],[1279,130],[1279,719],[0,719],[430,100]]
+        }],
+        "passcode": "admin:Aivid_2020",
+        "ip": "192.168.1.34",
+        "port": [ 80, 9988, 554, 85],
+        "rtspurl": "rtsp://admin:Aivid_2020@192.168.1.34:85/videoMainsc"
+    },{
+        "address": "West Elevator",
+        "location": {
+            "lat": 37.39124,
+            "lon": -121.97741
+        },
+        "algorithm": "svcq-counting",
+        "theta": 90.0,
+        "simsn": "cams2o1q7",
+        "simfile": "_svcq.mp4$"
+    }]
+}]

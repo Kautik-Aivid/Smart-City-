@@ -1,0 +1,73 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: stadium-office1-gateway-service
+  labels:
+    app: stadium-office1-gateway
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+  selector:
+    app: stadium-office1-gateway
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stadium-office1-gateway
+  labels:
+     app: stadium-office1-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stadium-office1-gateway
+  template:
+    metadata:
+      labels:
+        app: stadium-office1-gateway
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: stadium-office1-gateway
+          image: aividtechvision/smtc_api_gateway:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: OFFICE
+              value: "37.39856,-121.94866"
+            - name: DBHOST
+              value: "http://db-service:9200"
+            - name: STHOST
+              value: "http://stadium-office1-storage-service:8080"
+            - name: WEBRTCHOST
+              value: "http://stadium-office1-webrtc-service:8888"
+            - name: NO_PROXY
+              value: "*"
+            - name: no_proxy
+              value: "*"
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: timezone
+              readOnly: true
+      volumes:
+        - name: timezone
+          hostPath:
+            path: /etc/localtime
+            type: File
+      affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                  - key: workload
+                    operator: In
+                    values:
+                      - master
+
+
+---
+

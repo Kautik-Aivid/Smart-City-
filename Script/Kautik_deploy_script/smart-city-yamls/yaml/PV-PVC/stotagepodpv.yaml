@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: storagepod
+  labels:
+    type: local
+spec:
+  storageClassName: storagepod
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/media/desktop-4/D1/Kautik_PV_PVC/office"

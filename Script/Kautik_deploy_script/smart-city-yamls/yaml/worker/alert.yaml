@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stadium-office1-alert
+  labels:
+     app: stadium-office1-alert
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stadium-office1-alert
+  template:
+    metadata:
+      labels:
+        app: stadium-office1-alert
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: stadium-office1-alert
+          image: aividtechvision/smtc_alert:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: OFFICE
+              value: "37.39856,-121.94866"
+            - name: DBHOST
+              value: "http://db-service:9200"
+            - name: SERVICE_INTERVAL
+              value: "3,5,15"
+            - name: OCCUPENCY_ARGS
+              value: "100000,8,3,1000,20"
+            - name: NO_PROXY
+              value: "*"
+            - name: no_proxy
+              value: "*"
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: timezone
+              readOnly: true
+      volumes:
+          - name: timezone
+            hostPath:
+                path: /etc/localtime
+                type: File
+      affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                  - key: workload
+                    operator: In
+                    values:
+                      - master
+
+
+---
+

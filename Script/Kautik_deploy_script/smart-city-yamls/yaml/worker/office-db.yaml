@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stadium-office1-db-init
+  labels:
+      app: stadium-office1-db-init
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stadium-office1-db-init
+  template:
+    metadata:
+      labels:
+        app: stadium-office1-db-init
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: stadium-office1-db-init
+          image: aividtechvision/smtc_db_init:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: "OFFICE"
+              value: "37.39856,-121.94866"
+            - name: "DBHOST"
+              value: "http://db-service:9200"
+            - name: "DBCHOST"
+              value: "http://cloud-gateway-service:8080/cloud/api/db"
+            - name: GWHOST
+              value: "http://stadium-office1-gateway-service:8080"
+            - name: SCENARIO
+              value: "stadium"
+            - name: REPLICAS
+              value: "0,0"
+            - name: NO_PROXY
+              value: "*"
+            - name: no_proxy
+              value: "*"
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: timezone
+              readOnly: true
+            - mountPath: /var/run/secrets
+              name: sensor-info
+              readOnly: true
+      volumes:
+          - name: timezone
+            hostPath:
+                path: /etc/localtime
+                type: File
+          - name: sensor-info
+            configMap:
+                name: sensor-info
+      affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                  - key: workload
+                    operator: In
+                    values:
+                      - master
+
+          podAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - db
+              topologyKey: "kubernetes.io/hostname"
+
+---
+

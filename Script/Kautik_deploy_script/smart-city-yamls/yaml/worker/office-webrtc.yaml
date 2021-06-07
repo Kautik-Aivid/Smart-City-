@@ -1,0 +1,186 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: stadium-office1-webrtc-service
+  labels:
+    app: stadium-office1-webrtc
+spec:
+  ports:
+    - port: 8888
+      targetPort: 8888
+  selector:
+    app: stadium-office1-webrtc
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: stadium-office1-webrtc-io-service
+  labels:
+    app: stadium-office1-webrtc-io
+spec:
+  ports:
+    - name: port1
+      protocol: UDP
+      port: 10011
+      targetPort: 10011
+    - name: port2
+      protocol: UDP
+      port: 10012
+      targetPort: 10012
+    - name: port3
+      protocol: UDP
+      port: 10013
+      targetPort: 10013
+    - name: port4
+      protocol: UDP
+      port: 10014
+      targetPort: 10014
+    - name: port5
+      protocol: UDP
+      port: 10015
+      targetPort: 10015
+    - name: port6
+      protocol: UDP
+      port: 10016
+      targetPort: 10016
+    - name: port7
+      protocol: UDP
+      port: 10017
+      targetPort: 10017
+    - name: port8
+      protocol: UDP
+      port: 10018
+      targetPort: 10018
+    - name: port9
+      protocol: UDP
+      port: 10019
+      targetPort: 10019
+    - name: port10
+      protocol: UDP
+      port: 10020
+      targetPort: 10020
+  externalIPs:
+    - 192.168.1.18
+  selector:
+    app: stadium-office1-webrtc
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stadium-office1-webrtc
+  labels:
+     app: stadium-office1-webrtc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stadium-office1-webrtc
+  template:
+    metadata:
+      labels:
+        app: stadium-office1-webrtc
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: rabbitmq
+          image: aividtechvision/smtc_sensor_webrtc:latest
+          imagePullPolicy: IfNotPresent
+          command: [ "/usr/sbin/rabbitmq-server" ]
+          env:
+            - name: RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS
+              value: "+sbwt none"
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: timezone
+              readOnly: true
+          securityContext:
+            runAsUser: 106
+        - name: mongodb
+          image: aividtechvision/smtc_sensor_webrtc:latest
+          imagePullPolicy: IfNotPresent
+          command: [ "/usr/bin/mongod","--config","/etc/mongodb.conf" ]
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: timezone
+              readOnly: true
+          securityContext:
+            runAsUser: 105
+        - name: webrtc
+          image: aividtechvision/smtc_sensor_webrtc:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8888
+            - containerPort: 10011
+              protocol: UDP
+            - containerPort: 10012
+              protocol: UDP
+            - containerPort: 10013
+              protocol: UDP
+            - containerPort: 10014
+              protocol: UDP
+            - containerPort: 10015
+              protocol: UDP
+            - containerPort: 10016
+              protocol: UDP
+            - containerPort: 10017
+              protocol: UDP
+            - containerPort: 10018
+              protocol: UDP
+            - containerPort: 10019
+              protocol: UDP
+            - containerPort: 10020
+              protocol: UDP
+          env:
+            - name: OFFICE
+              value: "37.39856,-121.94866"
+            - name: DBHOST
+              value: "http://db-service:9200"
+            - name: RTMP_HOST
+              value: "rtmp://stadium-office1-rtmp-service:1935/sensors"
+            - name: WEBRTC_STREAMING_LIMIT
+              value: "10"
+            - name: WEBRTC_UDP_PORT
+              value: "10010"
+            - name: INACTIVE_TIME
+              value: "10"
+            - name: WEBRTC_HOSTIP
+              value: "192.168.1.18"
+            - name: NO_PROXY
+              value: "*"
+            - name: no_proxy
+              value: "*"
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: timezone
+              readOnly: true
+          resources:
+            limits:
+              cpu: "4"
+            requests:
+              cpu: "0.5"
+          securityContext:
+            runAsUser: 0
+      volumes:
+          - name: timezone
+            hostPath:
+              path: /etc/localtime
+              type: File
+      affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                  - key: workload
+                    operator: In
+                    values:
+                      - master
+
+
+---
+
+
+
