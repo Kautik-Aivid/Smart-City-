@@ -32,7 +32,7 @@ spec:
     spec:
       containers:
       - name: kibana
-        image: docker.elastic.co/kibana/kibana-oss:6.8.13
+        image: docker.elastic.co/kibana/kibana:7.10.1
         resources:
           limits:
             cpu: 1000m
@@ -40,17 +40,17 @@ spec:
             cpu: 100m
         env:
           - name: CLUSTER_NAME
-            value: cloud-cluster
-            - name: XPACK_SECURITY_ENABLED
-              value: "true"
-            - name: XPACK_GRAPH_ENABLED
-              value: "true"
-            - name: XPACK_ML_ENABLED
-              value: "true"
-            - name: XPACK_REPORTING_ENABLED
-              value: "true"
+            value: escluster
+          - name: XPACK_SECURITY_ENABLED
+            value: "true"
+          - name: XPACK_GRAPH_ENABLED
+            value: "true"
+          - name: XPACK_ML_ENABLED
+            value: "true"
+          - name: XPACK_REPORTING_ENABLED
+            value: "true"
           - name: ELASTICSEARCH_HOSTS
-            value: http://192.168.1.18:32568
-​
+            value: http://192.168.1.18:32569
+
         ports:
         - containerPort: 5601

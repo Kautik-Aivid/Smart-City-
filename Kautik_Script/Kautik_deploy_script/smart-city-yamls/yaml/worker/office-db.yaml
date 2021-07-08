@@ -17,7 +17,7 @@ spec:
       enableServiceLinks: false
       containers:
         - name: stadium-office1-db-init
-          image: aividtechvision/smtc_db_init:latest
+          image: aividtechvision/smtc_db_init:1.0
           imagePullPolicy: IfNotPresent
           env:
             - name: "OFFICE"

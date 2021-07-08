@@ -1,0 +1,21 @@
+apiVersion: autoscaling.kce.ksyun.com/v1beta1
+kind: CronHorizontalPodAutoscaler
+metadata:
+  labels:
+    controller-tools.k8s.io: "1.0"
+  name: queue-cron
+spec:
+   scaleTargetRef:
+      apiVersion: apps/v1beta2
+      kind: Deployment
+      name: stadium-office1-analytics-queue
+   excludeDates:
+#   - "* * * 15 11 *"                           
+#   - "* * * * * 5"                            
+   jobs:
+   - name: "scale-down"
+     schedule:  "0 00 19 * * 1-5"                 
+     targetSize: 0
+   - name: "scale-up"
+     schedule: "0 00 10 * * 1-5"                 
+     targetSize: 1

@@ -9,7 +9,7 @@ kubectl create secret generic self-signed-certificate --from-file=./certificate/
 
 
 echo "----------------------Deploying master node yamls----------------------"
-kubectl apply -f yaml/PV-PVC/
+#kubectl apply -f yaml/PV-PVC/
 kubectl apply -f yaml/master/
 kubectl apply -f yaml/worker/
 

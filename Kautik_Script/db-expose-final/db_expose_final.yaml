@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: cloud-db
+  name: cloud-db-service-exposed
+  namespace: default
+spec:
+  externalTrafficPolicy: Cluster
+  ports:
+  - nodePort: 32568
+    port: 9200
+    protocol: TCP
+    targetPort: 9200
+  selector:
+    app: cloud-db
+  sessionAffinity: None
+  type: NodePort

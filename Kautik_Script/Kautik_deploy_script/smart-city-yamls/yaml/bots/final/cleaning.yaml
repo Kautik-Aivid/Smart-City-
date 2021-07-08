@@ -1,26 +1,25 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: stadium-office1-analytics-queue
+  name: stadium-office1-analytics-cleaning
   labels:
-     app: stadium-office1-analytics-queue
+     app: stadium-office1-analytics-cleaning
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
-      app: stadium-office1-analytics-queue
+      app: stadium-office1-analytics-cleaning
   template:
     metadata:
       labels:
-        app: stadium-office1-analytics-queue
+        app: stadium-office1-analytics-cleaning
     spec:
       enableServiceLinks: false
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
       containers:
-        - name: stadium-office1-analytics-queue
-          image: aividtechvision/smtc_analytics_queue_xeon_gst:latest
+        - name: stadium-office1-analytics-cleaning
+          image: aividtechvision/smtc_analytics_cleaning_xeon_gst:1.1
           imagePullPolicy: IfNotPresent
           env:
             - name: OFFICE
@@ -31,8 +30,6 @@ spec:
               value: "stadium-office1-mqtt-service"
             - name: STHOST
               value: "http://stadium-office1-storage-service:8080/api/upload"
-            - name: MQTT_TOPIC
-              value: "analytics"
             - name: EVERY_NTH_FRAME
               value: "6"
             - name: SCENARIO
@@ -49,6 +46,8 @@ spec:
               readOnly: true
             - mountPath: /tmp/rec
               name: recording
+            #- mountPath: /home/screenshot
+            #  name: screenshots
       initContainers:
             - image: busybox:latest
               imagePullPolicy: IfNotPresent
@@ -71,10 +70,8 @@ spec:
             requiredDuringSchedulingIgnoredDuringExecution:
               nodeSelectorTerms:
                 - matchExpressions:
-                  - key: workload
-                    operator: In
+                  - key: "vcac-zone"
+                    operator: NotIn
                     values:
-                      - master
+                      - "yes"
 
-
----
