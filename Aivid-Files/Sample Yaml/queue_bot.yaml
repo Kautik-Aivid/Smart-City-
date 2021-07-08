@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stadium-ahm1-analytics-queue
+  labels:
+     app: stadium-ahm1-analytics-queue
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stadium-ahm1-analytics-queue
+  template:
+    metadata:
+      labels:
+        app: stadium-ahm1-analytics-queue
+    spec:
+      enableServiceLinks: false
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      imagePullSecrets:
+      - name: aividtech
+      containers:
+        - name: stadium-ahm1-analytics-queue
+          image: aividtech/smtc_analytics_queue_xeon_gst:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: OFFICE
+              value: "37.39856,-121.94866"
+            - name: DBHOST
+              value: "http://stadium-ahm1-db-service:9200"
+            - name: MQTTHOST
+              value: "stadium-ahm1-mqtt-service"
+            - name: STHOST
+              value: "http://stadium-ahm1-storage-service:8080/api/upload"
+            - name: MQTT_TOPIC
+              value: "analytics"
+            - name: EVERY_NTH_FRAME
+              value: "6"
+            - name: SCENARIO
+              value: "stadium"
+            - name: NETWORK_PREFERENCE
+              value: "{\"CPU\":\"INT8,FP32\"}"
+            - name: NO_PROXY
+              value: "*"
+            - name: no_proxy
+              value: "*"
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: timezone
+              readOnly: true
+            - mountPath: /home/screenshot
+              name: screenshot
+      initContainers:
+            - image: busybox:latest
+              imagePullPolicy: IfNotPresent
+              name: init
+              command: ["/bin/chown","0:0","/home/screenshot"]
+              volumeMounts:
+              - mountPath: /home/screenshot
+                name: screenshot
+            - image: busybox:latest
+              imagePullPolicy: IfNotPresent
+              name: init-2
+              command: ["/bin/chmod","-R","777","/home/screenshot"]
+              volumeMounts:
+              - mountPath: /home/screenshot
+                name: screenshot
+      volumes:
+          - name: timezone
+            hostPath:
+                path: /etc/localtime
+                type: File
+          - name: screenshot
+            persistentVolumeClaim:
+              claimName: ahm1-queue-screenshot-pvc
+          # - name: recording
+          #   emptyDir:
+          #     medium: Memory
+          #     sizeLimit: 150Mi
+      affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                  - key: workload
+                    operator: In
+                    values:
+                      - ahm

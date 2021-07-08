@@ -1,0 +1,12 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: ahm1-queue-screenshot
+spec:
+  storageClassName: aivid-ahm1-queue-screenshot
+  capacity:
+    storage: 5Gi
+  accessModes:
+  - ReadWriteOnce
+  hostPath:
+    path: "/opt/aividsetup/worker/aividpv/office-queue-screenshot/ahm1"
