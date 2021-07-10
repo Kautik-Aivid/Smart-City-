@@ -87,6 +87,8 @@ sudo hwinfo --short --usb --cpu --block
         printf '%s\n'
         printf '%s\n'
 docker run -it projectdiscovery/naabu -nmap 192.168.1.1 > aivid.txt
+yes | apt-get install lynis
+lynis audit system
     fi
 
         if [[ ${opts[3]} ]]
